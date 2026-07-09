@@ -1,1 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>🎁 Survivor Supply Drop</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:#090909;
+color:white;
+text-align:center;
+overflow:hidden;
+}
+
+body::before{
+content:"";
+position:fixed;
+width:100%;
+height:100%;
+background:
+radial-gradient(circle at 20% 20%,rgba(0,255,0,.05),transparent 30%),
+radial-gradient(circle at 80% 70%,rgba(255,0,0,.08),transparent 30%),
+linear-gradient(#111,#000);
+z-index:-2;
+}
+
+#fog{
+position:fixed;
+width:100%;
+height:100%;
+background:rgba(255,255,255,.02);
+animation:fog 6s infinite alternate;
+z-index:-1;
+}
+
+@keyframes fog{
+from{opacity:.2;}
+to{opacity:.5;}
+}
+
+.container{
+padding:25px;
+}
+
+h1{
+font-size:34px;
+color:#55ff55;
+text-shadow:0 0 15px #00ff00;
+margin-top:20px;
+}
+
+.sub{
+margin-top:10px;
+color:#ccc;
+font-size:18px;
+}
+
+.panel{
+margin:30px auto;
+background:#111;
+border:2px solid #2aff2a;
+border-radius:20px;
+padding:25px;
+max-width:500px;
+box-shadow:0 0 25px #00ff0040;
+}
+
+.reward{
+font-size:26px;
+margin:15px;
+}
+
+button{
+background:#1dd11d;
+border:none;
+padding:18px 40px;
+font-size:22px;
+border-radius:12px;
+cursor:pointer;
+color:white;
+font-weight:bold;
+box-shadow:0 0 20px lime;
+}
+
+button:hover{
+transform:scale(1.05);
+}
+
+#screen{
+margin-top:25px;
+font-size:22px;
+line-height:2;
+display:none;
+}
+
+.hidden{
+display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="fog"></div>
+
+<div class="container">
+
+<h1>☣ SURVIVOR SUPPLY DROP ☣</h1>
+
+<p class="sub">
+Special Emergency Reward reserved for <b>Anshika</b>
+</p>
+
+<div class="panel">
+
+<div class="reward">
+💎 💎 💎 💎 💎
+<br>
+100,000 Survivor Diamonds
+</div>
+
+<div class="reward">
+🧟 Zombie Elimination Bonus
+</div>
+
+<div class="reward">
+🚁 Legendary Supply Crate
+</div>
+
+<button onclick="claimReward()">
+CLAIM REWARD
+</button>
+
+<div id="screen"></div>
+
+</div>
+
+</div><script>
+
+function claimReward(){
+
+document.querySelector("button").style.display="none";
+
+let s=document.getElementById("screen");
+s.style.display="block";
+
+s.innerHTML=`
+⏳ Connecting to Survivor Network...
+<br><br>
+🛰 Contacting Supply Base...
+`;
+
+setTimeout(()=>{
+
+s.innerHTML=`
+🔍 Searching player...
+<br><br>
+👤 Player Found:
+<b>Anshika</b>
+`;
+
+},2000);
+
+setTimeout(()=>{
+
+s.innerHTML=`
+💎 Reward Found
+<br><br>
+██████████ 100%
+`;
+
+},4500);
+
+setTimeout(()=>{
+
+s.innerHTML=`
+🚁 Air Drop Incoming...
+`;
+
+},6500);
+
+setTimeout(()=>{
+
+s.innerHTML=`
+🧟 WARNING!
+<br><br>
+Zombie Horde detected...
+`;
+
+},8500);
+
+setTimeout(()=>{
+
+s.innerHTML=`
+💥 Zombies stole your diamonds!
+<br><br>
+🧟💎🏃🏃🏃
+`;
+
+},10500);
+
+setTimeout(()=>{
+
+s.innerHTML=`
+😂 Nice try Anshika!
+
+<br><br>
+
+The zombies reached the supply crate first.
+
+<br><br>
+
+💚 Better luck next apocalypse.
+`;
+
+},13000);
+
+}
+
+</script>
+
+</body>
+</html>
+
+  
