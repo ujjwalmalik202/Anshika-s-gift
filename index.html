@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>🎁 Survivor Supply Drop</title>
+<title>Emergency Supply Drop</title>
 
 <style>
 
@@ -16,80 +16,99 @@ font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
-background:#090909;
+background:#070707;
+overflow:hidden;
 color:white;
 text-align:center;
-overflow:hidden;
 }
 
 body::before{
 content:"";
 position:fixed;
-width:100%;
-height:100%;
+inset:0;
 background:
-radial-gradient(circle at 20% 20%,rgba(0,255,0,.05),transparent 30%),
-radial-gradient(circle at 80% 70%,rgba(255,0,0,.08),transparent 30%),
-linear-gradient(#111,#000);
-z-index:-2;
+radial-gradient(circle at 20% 20%,rgba(0,255,0,.08),transparent 35%),
+radial-gradient(circle at 80% 60%,rgba(255,0,0,.08),transparent 40%),
+linear-gradient(#121212,#000);
+animation:bgPulse 6s infinite alternate;
+z-index:-3;
+}
+
+@keyframes bgPulse{
+from{filter:brightness(.9);}
+to{filter:brightness(1.15);}
 }
 
 #fog{
 position:fixed;
-width:100%;
-height:100%;
-background:rgba(255,255,255,.02);
-animation:fog 6s infinite alternate;
-z-index:-1;
+inset:0;
+background:rgba(255,255,255,.03);
+animation:fog 7s infinite alternate;
+z-index:-2;
 }
 
 @keyframes fog{
 from{opacity:.2;}
-to{opacity:.5;}
+to{opacity:.45;}
+}
+
+#radiation{
+position:fixed;
+top:15px;
+left:15px;
+color:#65ff65;
+font-size:18px;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{opacity:.25;}
 }
 
 .container{
-padding:25px;
+padding-top:70px;
 }
 
 h1{
-font-size:34px;
-color:#55ff55;
-text-shadow:0 0 15px #00ff00;
-margin-top:20px;
+font-size:42px;
+color:#5dff5d;
+text-shadow:0 0 20px lime;
 }
 
 .sub{
-margin-top:10px;
-color:#ccc;
-font-size:18px;
+margin-top:12px;
+font-size:20px;
+color:#ddd;
 }
 
 .panel{
-margin:30px auto;
+margin:35px auto;
+width:92%;
+max-width:550px;
 background:#111;
-border:2px solid #2aff2a;
+border:2px solid #33ff33;
 border-radius:20px;
-padding:25px;
-max-width:500px;
-box-shadow:0 0 25px #00ff0040;
+padding:30px;
+box-shadow:0 0 30px rgba(0,255,0,.35);
 }
 
 .reward{
-font-size:26px;
-margin:15px;
+font-size:28px;
+margin:18px;
 }
 
 button{
-background:#1dd11d;
+margin-top:20px;
+background:#19d119;
 border:none;
-padding:18px 40px;
-font-size:22px;
+padding:18px 45px;
+font-size:24px;
+font-weight:bold;
+color:white;
 border-radius:12px;
 cursor:pointer;
-color:white;
-font-weight:bold;
 box-shadow:0 0 20px lime;
+transition:.25s;
 }
 
 button:hover{
@@ -97,14 +116,40 @@ transform:scale(1.05);
 }
 
 #screen{
-margin-top:25px;
+display:none;
+margin-top:30px;
 font-size:22px;
 line-height:2;
+}
+
+.progress{
+margin:25px auto;
+width:90%;
+height:22px;
+background:#222;
+border-radius:30px;
+overflow:hidden;
 display:none;
 }
 
-.hidden{
-display:none;
+.bar{
+height:100%;
+width:0%;
+background:lime;
+transition:width .3s;
+}
+
+.zombie{
+position:fixed;
+bottom:12px;
+font-size:45px;
+left:-60px;
+animation:walk 18s linear infinite;
+}
+
+@keyframes walk{
+from{left:-60px;}
+to{left:110%;}
 }
 
 </style>
@@ -114,123 +159,579 @@ display:none;
 
 <div id="fog"></div>
 
+<div id="radiation">
+☢ RADIATION LEVEL: MODERATE
+</div>
+
+<div class="zombie">
+🧟
+</div>
+
 <div class="container">
 
-<h1>☣ SURVIVOR SUPPLY DROP ☣</h1>
+<h1>☣ EMERGENCY SUPPLY DROP ☣</h1>
 
 <p class="sub">
-Special Emergency Reward reserved for <b>Anshika</b>
+Reserved Survivor:
+<b>Anshika</b>
 </p>
 
 <div class="panel">
 
 <div class="reward">
-💎 💎 💎 💎 💎
-<br>
-100,000 Survivor Diamonds
+💎 100,000 Survivor Diamonds
 </div>
 
 <div class="reward">
-🧟 Zombie Elimination Bonus
+🚁 Elite Supply Crate
 </div>
 
 <div class="reward">
-🚁 Legendary Supply Crate
+🧟 Zombie Hunter Bonus
 </div>
 
 <button onclick="claimReward()">
 CLAIM REWARD
 </button>
 
-<div id="screen"></div>
-
+<div class="progress">
+<div class="bar" id="bar"></div>
 </div>
 
-</div><script>
+<div id="screen"></div>
 
-function claimReward(){
+<script>
+const screen = document.getElementById("screen");
+
+const messages = [
+"🔍 Connecting to Survivor Network...",
+"🛰 Contacting Supply Server...",
+"📦 Searching nearby supply caches...",
+"💎 500 Diamonds located!",
+"🎁 Verifying account...",
+"⚠ Checking zombie activity...",
+"🧟 Zombie horde detected...",
+"🚁 Rescue helicopter dispatched...",
+"💎 +500 Diamonds secured",
+"🎟 Premium Supply Pass found",
+"🪖 Legendary Survivor Skin unlocked",
+"🚨 Final verification..."
+];
+
+function typeMessage(text, delay){
+    return new Promise(resolve=>{
+        setTimeout(()=>{
+            screen.innerHTML += text + "<br>";
+            screen.scrollTop = screen.scrollHeight;
+            resolve();
+        },delay);
+    });
+}
+
+async function claimReward(){
+
+document.querySelector("button").disabled=true;
+screen.innerHTML="";
+
+for(let i=0;i<messages.length;i++){
+    await typeMessage(messages[i],800);
+}
+
+await typeMessage("<br>✅ Verification Complete!",1200);
+
+await typeMessage("<br>🎉 Congratulations Anshika!",1200);
+
+await typeMessage("Your Survivor Bundle is ready.",800);
+
+await typeMessage("<br>Opening crate...",1200);
+
+setTimeout(()=>{
+screen.innerHTML=`
+<h2 style="color:#6dff6d">🎁 CRATE OPENED 🎁</h2>
+
+<div class="reward">💎 500 Diamonds</div>
+<div class="reward">🪖 Legendary Survivor Outfit</div>
+<div class="reward">🚁 Epic Rescue Helicopter</div>
+<div class="reward">🔫 Gold Weapon Crate ×5</div>
+<div class="reward">🧟 Zombie Elimination Pass</div>
+
+<br><br>
+
+<h2 style="color:#ff6b6b">
+😂 Nice try Anshika!
+</h2>
+
+<p>
+There were never any rewards...
+</p>
+
+<h1>❤️ From Ujjwal ❤️</h1>
+
+`;
+},2500);
+
+}
+</script>
+
+<script>
+
+const screen = document.getElementById("screen");
+const progress = document.querySelector(".progress");
+const bar = document.getElementById("bar");
+
+const steps = [
+"🛰 Connecting to Survivor Network...",
+"📡 Contacting Emergency Base...",
+"👤 Survivor Found: Anshika",
+"💎 Scanning Premium Crystals...",
+"📦 Locating Supply Crate...",
+"🚁 Dispatching Rescue Helicopter...",
+"🧟 Checking Zombie Activity...",
+"🔓 Unlocking Legendary Reward..."
+];
+
+async function claimReward(){
 
 document.querySelector("button").style.display="none";
+screen.style.display="block";
+progress.style.display="block";
 
-let s=document.getElementById("screen");
-s.style.display="block";
+screen.innerHTML="";
 
-s.innerHTML=`
-⏳ Connecting to Survivor Network...
-<br><br>
-🛰 Contacting Supply Base...
-`;
+for(let i=0;i<steps.length;i++){
 
-setTimeout(()=>{
+bar.style.width=((i+1)/steps.length*100)+"%";
 
-s.innerHTML=`
-🔍 Searching player...
-<br><br>
-👤 Player Found:
-<b>Anshika</b>
-`;
+screen.innerHTML+=steps[i]+"<br>";
 
-},2000);
-
-setTimeout(()=>{
-
-s.innerHTML=`
-💎 Reward Found
-<br><br>
-██████████ 100%
-`;
-
-},4500);
-
-setTimeout(()=>{
-
-s.innerHTML=`
-🚁 Air Drop Incoming...
-`;
-
-},6500);
-
-setTimeout(()=>{
-
-s.innerHTML=`
-🧟 WARNING!
-<br><br>
-Zombie Horde detected...
-`;
-
-},8500);
-
-setTimeout(()=>{
-
-s.innerHTML=`
-💥 Zombies stole your diamonds!
-<br><br>
-🧟💎🏃🏃🏃
-`;
-
-},10500);
-
-setTimeout(()=>{
-
-s.innerHTML=`
-😂 Nice try Anshika!
-
-<br><br>
-
-The zombies reached the supply crate first.
-
-<br><br>
-
-💚 Better luck next apocalypse.
-`;
-
-},13000);
+await new Promise(r=>setTimeout(r,1000));
 
 }
 
+screen.innerHTML+="<br>🎁 Opening Supply Crate...";
+
+await new Promise(r=>setTimeout(r,2500));
+
+screen.innerHTML=`
+
+<h2 style="color:#66ff66">🎉 SUPPLY CRATE OPENED 🎉</h2>
+
+💎 +100000 Survivor Crystals<br>
+🚁 Legendary Helicopter<br>
+🪖 Mythic Survivor Outfit<br>
+⚡ Unlimited Energy<br>
+
+<br>
+
+██████████ 100%
+
+`;
+
+await new Promise(r=>setTimeout(r,3000));
+
+document.body.style.animation="shake .4s";
+
+screen.innerHTML=`
+
+<h2 style="color:red;">☣ ZOMBIE ATTACK ☣</h2>
+
+🧟🧟🧟🧟🧟
+
+<br><br>
+
+The zombie horde stole your crate!
+
+<br><br>
+
+💎 Crystals Remaining: <b>0</b>
+
+<br><br>
+
+🥔 Compensation:
+One Potato
+
+<br><br>
+
+❤️ Unlimited Friendship from Ujjwal
+
+<br><br>
+
+😂 Better luck after the apocalypse!
+
+`;
+
+}
+
+// ===== Final Surprise =====
+
+setTimeout(()=>{
+
+document.body.style.background="#200";
+
+screen.innerHTML=`
+
+<h1 style="color:#ff3b3b;">☠ ZOMBIE HORDE ATTACK ☠</h1>
+
+<div style="font-size:70px;">
+🧟🧟🧟🧟🧟
+</div>
+
+<br>
+
+⚠ Emergency Alert ⚠
+
+<br><br>
+
+The zombies broke into the supply helicopter...
+
+<br><br>
+
+💥 They stole everything!
+
+<hr style="margin:25px 0;">
+
+/* ===== PART 5 ===== */
+
+@keyframes floatCrystal{
+0%{
+transform:translateY(0px) rotate(0deg);
+opacity:.7;
+}
+50%{
+opacity:1;
+}
+100%{
+transform:translateY(-120px) rotate(360deg);
+opacity:0;
+}
+}
+
+.crystal{
+position:fixed;
+bottom:-30px;
+font-size:28px;
+animation:floatCrystal 8s linear infinite;
+}
+
+.c1{left:10%;animation-delay:0s;}
+.c2{left:30%;animation-delay:2s;}
+.c3{left:55%;animation-delay:4s;}
+.c4{left:75%;animation-delay:1s;}
+.c5{left:90%;animation-delay:3s;}
+
+@keyframes helicopter{
+
+0%{
+left:-220px;
+top:80px;
+}
+
+100%{
+left:120%;
+top:120px;
+}
+
+}
+
+.heli{
+
+position:fixed;
+
+font-size:55px;
+
+left:-200px;
+
+top:80px;
+
+animation:helicopter 18s linear infinite;
+
+}
+
+@keyframes moonGlow{
+
+0%{
+box-shadow:0 0 25px white;
+}
+
+100%{
+box-shadow:0 0 80px #ffffaa;
+}
+
+}
+
+.moon{
+
+position:fixed;
+
+right:40px;
+
+top:30px;
+
+width:70px;
+
+height:70px;
+
+border-radius:50%;
+
+background:#ffffcc;
+
+animation:moonGlow 3s infinite alternate;
+
+}
+
+@keyframes ember{
+
+0%{
+
+transform:translateY(0);
+
+opacity:1;
+
+}
+
+100%{
+
+transform:translateY(-250px);
+
+opacity:0;
+
+}
+
+}
+
+.ember{
+
+position:fixed;
+
+bottom:-20px;
+
+font-size:18px;
+
+color:orange;
+
+animation:ember 6s linear infinite;
+
+}
+
+.e1{left:15%;}
+.e2{left:40%;animation-delay:2s;}
+.e3{left:65%;animation-delay:1s;}
+.e4{left:85%;animation-delay:3s;}
+
+@keyframes shake{
+
+0%{transform:translateX(0);}
+20%{transform:translateX(-8px);}
+40%{transform:translateX(8px);}
+60%{transform:translateX(-8px);}
+80%{transform:translateX(8px);}
+100%{transform:translateX(0);}
+
+}
+
+<h2>Remaining Rewards</h2>
+
+🥔 One Potato
+
+<br>
+
+🥤 Half Bottle of Water
+
+<br>
+
+🩹 One Bandage
+
+<br>
+
+❤️ Unlimited Friendship from Ujjwal
+
+<br><br>
+
+<h1 style="color:#00ff99;">
+💎 Diamonds: 0
+</h1>
+
+<br>
+
+😂 Better luck surviving the apocalypse, Anshika!
+
+`;
+
+},5000);
+
 </script>
 
+/* ===== PART 6 ===== */
+
+function flashScreen(){
+
+let flash=document.createElement("div");
+
+flash.style.position="fixed";
+flash.style.left="0";
+flash.style.top="0";
+flash.style.width="100%";
+flash.style.height="100%";
+flash.style.background="white";
+flash.style.opacity=".85";
+flash.style.pointerEvents="none";
+flash.style.transition=".4s";
+
+document.body.appendChild(flash);
+
+setTimeout(()=>{
+
+flash.style.opacity="0";
+
+},80);
+
+setTimeout(()=>{
+
+flash.remove();
+
+},500);
+
+}
+
+function screenShake(){
+
+document.body.style.animation="shake .4s";
+
+setTimeout(()=>{
+
+document.body.style.animation="";
+
+},400);
+
+}
+
+function zombieAttack(){
+
+flashScreen();
+
+screenShake();
+
+screen.innerHTML+=`
+
+<br><br>
+
+<h2 style="color:#ff4444;">
+☣ ZOMBIE RAID DETECTED ☣
+</h2>
+
+🧟🧟🧟🧟🧟
+
+<br><br>
+
+🚁 Your helicopter crashed!
+
+<br>
+
+💎 Crystals dropped everywhere!
+
+<br>
+
+🧟 Zombies picked them all up.
+
+<br><br>
+
+━━━━━━━━━━━━━━
+
+<br><br>
+
+🏆 Final Rewards
+
+<br><br>
+
+🥔 Potato ×1
+
+🩹 Bandage ×1
+
+🥤 Half Bottle of Water
+
+❤️ Unlimited Friendship
+
+😂 Lifetime Supply of Ujjwal's Bad Jokes
+
+<br><br>
+
+<h1 style="color:#00ff99;">
+
+💎 Premium Crystals
+
+0
+
+</h1>
+
+`;
+
+}
+
+setTimeout(zombieAttack,18000);
+
+</body>
+
+<div class="moon"></div>
+
+<div class="heli">🚁</div>
+
+<div class="crystal c1">💎</div>
+<div class="crystal c2">💎</div>
+<div class="crystal c3">💎</div>
+<div class="crystal c4">💎</div>
+<div class="crystal c5">💎</div>
+
+<div class="ember e1">🔥</div>
+<div class="ember e2">🔥</div>
+<div class="ember e3">🔥</div>
+<div class="ember e4">🔥</div>
+
+</html>
+🧟🧟🧟🧟🧟
+</div>
+
+<br>
+
+⚠ Emergency Alert ⚠
+
+<br><br>
+
+The zombies broke into the supply helicopter...
+
+<br><br>
+
+💥 They stole everything!
+
+<hr style="margin:25px 0;">
+
+<h2>Remaining Rewards</h2>
+
+🥔 One Potato
+
+<br>
+
+🥤 Half Bottle of Water
+
+<br>
+
+🩹 One Bandage
+
+<br>
+
+❤️ Unlimited Friendship from Ujjwal
+
+<br><br>
+
+<h1 style="color:#00ff99;">
+💎 Diamonds: 0
+</h1>
+
+<br>
+
+😂 Better luck surviving the apocalypse, Anshika!
+
+`;
+
+},5000);
 </body>
 </html>
-
-  
